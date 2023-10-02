@@ -5,9 +5,6 @@ import { createPost, getAllPosts } from '../controllers/postControllers.js';
 
 const router = express.Router();
 
-router
-  .route('/')
-  .post(protect, isVerified, createPost)
-  .get(protect, isVerified, getAllPosts);
+router.route('/').post(protect, isVerified, createPost).get(getAllPosts);
 
 export default router;

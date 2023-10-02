@@ -1,15 +1,34 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { setCredentials } from './slices/authSlices';
+import { useRegisterMutation } from './slices/userApiSlices';
 
 const RegisterScreen = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const submitHandler = (e) => {
+  const { userInfo } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [register, { isLoading }] = useRegisterMutation();
+
+  const submitHandler = async (e) => {
     e.preventDefault();
-    console.log(name, email, password);
+
+    const res = await register({ name, email, password }).unwrap();
+    dispatch(setCredentials({ ...res }));
+    navigate('/posts');
   };
 
+  useEffect(() => {
+    if (userInfo) {
+      navigate('/posts');
+    }
+  }, [navigate, userInfo]);
   return (
     <>
       <h1>Register</h1>
@@ -36,6 +55,8 @@ const RegisterScreen = () => {
         <br />
         <button type="submit">Register</button>
       </form>
+
+      {isLoading && <p>Loading...</p>}
     </>
   );
 };
